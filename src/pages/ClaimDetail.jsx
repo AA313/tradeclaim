@@ -36,12 +36,12 @@ export default function ClaimDetail() {
     if (record) {
       const [jobRecord, evidencePage, documentPage] = await Promise.all([
         base44.entities.Job.get(record.job_id).catch(() => null),
-        base44.entities.Evidence.filter({ job_id: record.job_id }, { limit: 400, sort: '-captured_at' }),
-        base44.entities.Document.filter({ claim_id: claimId }, { limit: 50, sort: '-generated_at' }),
+        base44.entities.Evidence.filter({ job_id: record.job_id }, '-captured_at', 400),
+        base44.entities.Document.filter({ claim_id: claimId }, '-generated_at', 50),
       ]);
       setJob(jobRecord);
-      setEvidence((evidencePage && evidencePage.items) || []);
-      setDocuments((documentPage && documentPage.items) || []);
+      setEvidence(evidencePage || []);
+      setDocuments(documentPage || []);
     }
     setLoading(false);
   };

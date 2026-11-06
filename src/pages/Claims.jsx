@@ -21,11 +21,11 @@ export default function Claims() {
 
   const load = async () => {
     const [claimPage, jobPage] = await Promise.all([
-      base44.entities.Claim.filter({}, { limit: 400, sort: '-created_date' }),
-      base44.entities.Job.filter({}, { limit: 100, sort: 'created_date' }),
+      base44.entities.Claim.filter({}, '-created_date', 400),
+      base44.entities.Job.filter({}, 'created_date', 100),
     ]);
-    setClaims((claimPage && claimPage.items) || []);
-    setJobs((jobPage && jobPage.items) || []);
+    setClaims(claimPage || []);
+    setJobs(jobPage || []);
     setLoading(false);
   };
 
@@ -39,10 +39,10 @@ export default function Claims() {
   useEffect(() => {
     if (!stateCodes.length) return undefined;
     let alive = true;
-    base44.entities.PublicHoliday.filter({ state: { $in: stateCodes } }, { limit: 500, sort: 'date' })
+    base44.entities.PublicHoliday.filter({ state: { $in: stateCodes } }, 'date', 500)
       .then((page) => {
         if (!alive) return;
-        const items = (page && page.items) || [];
+        const items = page || [];
         setHolidayCount(items.length);
         setLoadedStates(Array.from(new Set(items.map((holiday) => holiday.state))));
       })

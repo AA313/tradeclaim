@@ -50,20 +50,20 @@ export default function JobDetail() {
   const load = async () => {
     const [jobRecord, linePage, evidencePage, variationPage, claimPage, defectPage, visitPage] = await Promise.all([
       base44.entities.Job.get(jobId).catch(() => null),
-      base44.entities.ScopeLine.filter({ job_id: jobId }, { limit: 200, sort: 'sort_order' }),
-      base44.entities.Evidence.filter({ job_id: jobId }, { limit: 400, sort: '-captured_at' }),
-      base44.entities.Variation.filter({ job_id: jobId }, { limit: 100, sort: '-created_date' }),
-      base44.entities.Claim.filter({ job_id: jobId }, { limit: 100, sort: '-claim_number' }),
-      base44.entities.Defect.filter({ job_id: jobId }, { limit: 200, sort: '-raised_at' }),
-      base44.entities.DefectVisit.filter({ job_id: jobId }, { limit: 400, sort: '-attended_at' }),
+      base44.entities.ScopeLine.filter({ job_id: jobId }, 'sort_order', 200),
+      base44.entities.Evidence.filter({ job_id: jobId }, '-captured_at', 400),
+      base44.entities.Variation.filter({ job_id: jobId }, '-created_date', 100),
+      base44.entities.Claim.filter({ job_id: jobId }, '-claim_number', 100),
+      base44.entities.Defect.filter({ job_id: jobId }, '-raised_at', 200),
+      base44.entities.DefectVisit.filter({ job_id: jobId }, '-attended_at', 400),
     ]);
     setJob(jobRecord);
-    setLines((linePage && linePage.items) || []);
-    setEvidence((evidencePage && evidencePage.items) || []);
-    setVariations((variationPage && variationPage.items) || []);
-    setClaims((claimPage && claimPage.items) || []);
-    setDefects((defectPage && defectPage.items) || []);
-    setDefectVisits((visitPage && visitPage.items) || []);
+    setLines(linePage || []);
+    setEvidence(evidencePage || []);
+    setVariations(variationPage || []);
+    setClaims(claimPage || []);
+    setDefects(defectPage || []);
+    setDefectVisits(visitPage || []);
     setLoading(false);
   };
 

@@ -20,12 +20,12 @@ export default function Capture() {
   const load = async () => {
     const [jobRecord, linePage, evidencePage] = await Promise.all([
       base44.entities.Job.get(jobId).catch(() => null),
-      base44.entities.ScopeLine.filter({ job_id: jobId }, { limit: 200, sort: 'sort_order' }),
-      base44.entities.Evidence.filter({ job_id: jobId }, { limit: 400, sort: '-captured_at' }),
+      base44.entities.ScopeLine.filter({ job_id: jobId }, 'sort_order', 200),
+      base44.entities.Evidence.filter({ job_id: jobId }, '-captured_at', 400),
     ]);
     setJob(jobRecord);
-    setLines((linePage && linePage.items) || []);
-    setEvidence((evidencePage && evidencePage.items) || []);
+    setLines(linePage || []);
+    setEvidence(evidencePage || []);
     setLoading(false);
   };
 

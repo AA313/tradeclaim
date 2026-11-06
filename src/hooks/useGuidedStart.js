@@ -16,15 +16,15 @@ export default function useGuidedStart() {
   useEffect(() => {
     let alive = true;
     Promise.all([
-      base44.entities.Job.filter({}, { limit: 50, sort: 'created_date' }),
-      base44.entities.Claim.filter({}, { limit: 200, sort: '-created_date' }),
-      base44.entities.Evidence.filter({}, { limit: 1 }),
+      base44.entities.Job.filter({}, 'created_date', 50),
+      base44.entities.Claim.filter({}, '-created_date', 200),
+      base44.entities.Evidence.filter({}, '-created_date', 1),
     ])
       .then(([jobPage, claimPage, evidencePage]) => {
         if (!alive) return;
-        setJobs((jobPage && jobPage.items) || []);
-        setClaims((claimPage && claimPage.items) || []);
-        setHasEvidence(Boolean(evidencePage && evidencePage.items && evidencePage.items.length));
+        setJobs(jobPage || []);
+        setClaims(claimPage || []);
+        setHasEvidence(Boolean(evidencePage && evidencePage.length));
         setLoaded(true);
       })
       .catch(() => setLoaded(false));

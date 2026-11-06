@@ -42,8 +42,8 @@ export default async function (req) {
     }
 
     const lineIds = (current.lines || []).map((line) => line.scope_line_id);
-    const page = await base44.entities.Evidence.filter({ job_id: current.job_id }, { limit: 400, sort: '-captured_at' });
-    const allEvidence = page && page.items ? page.items : [];
+    const page = await base44.entities.Evidence.filter({ job_id: current.job_id }, '-captured_at', 400);
+    const allEvidence = page || [];
     const lineEvidence = evidenceForLines(allEvidence, (current.lines || []).map((line) => ({ scope_line_id: line.scope_line_id })));
 
     let bytes;
