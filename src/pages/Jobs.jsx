@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import JobCard from '@/components/jobs/JobCard';
 import NextStepGuide from '@/components/tutorial/NextStepGuide';
 import { effectiveStatus } from '@/lib/claims';
-import { createDemoJob } from '@/lib/demoJob';
+import { seedDemoJobs } from '@/lib/seedJobs';
 import { formatAud } from '@/lib/format';
 import { TUTORIAL_HIDDEN_KEY, tutorialState } from '@/lib/tutorial';
 
@@ -45,7 +45,7 @@ export default function Jobs() {
   const startDemo = async () => {
     setDemoLoading(true);
     try {
-      const job = await createDemoJob();
+      const job = await seedDemoJobs();
       navigate(`/jobs/${job.id}`);
     } finally {
       setDemoLoading(false);
@@ -125,7 +125,7 @@ export default function Jobs() {
         <div className="rounded-[4px] border border-dashed border-border bg-card px-6 py-14 text-center">
           <p className="font-heading text-lg">No jobs yet</p>
           <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
-            Start with a quote, or open a finished demo job and work the loop from evidence to a served claim.
+            Start with a quote, or load three demo jobs: one scheduled short, one ignored, one paid after adjudication.
           </p>
           <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
             <Button asChild className="bg-primary">
@@ -136,11 +136,11 @@ export default function Jobs() {
             <Button variant="outline" onClick={startDemo} disabled={demoLoading}>
               {demoLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Building the demo job
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Building the demo jobs
                 </>
               ) : (
                 <>
-                  <Sparkles className="mr-2 h-4 w-4" /> Try the demo job
+                  <Sparkles className="mr-2 h-4 w-4" /> Load the demo jobs
                 </>
               )}
             </Button>
