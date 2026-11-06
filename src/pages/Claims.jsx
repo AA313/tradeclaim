@@ -6,6 +6,7 @@ import ClaimRow from '@/components/claims/ClaimRow';
 import { CARD, CARD_HEAD, CARD_META, SMALL_ACTION } from '@/components/jobs/taskStyles';
 import { effectiveStatus } from '@/lib/claims';
 import { jurisdictionFor } from '@/lib/jurisdictions';
+import { ensureNoticeDrafts } from '@/lib/notices';
 import { formatAud } from '@/lib/format';
 
 const RANK = { ignored: 0, adjudication_ready: 1, scheduled_short: 1, served: 2, draft: 3, scheduled_in_full: 4, paid: 5 };
@@ -27,6 +28,12 @@ export default function Claims() {
     setClaims(claimPage || []);
     setJobs(jobPage || []);
     setLoading(false);
+
+    // Any claim the clock has run out on gets its notice drafted in the
+    // background, so it is ready by the time the claim is opened.
+    ensureNoticeDrafts(claimPage || []).then((drafted) => {
+      if (drafted) load();
+    });
   };
 
   useEffect(() => {

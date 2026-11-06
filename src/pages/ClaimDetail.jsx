@@ -15,6 +15,7 @@ import DocumentList from '@/components/claims/DocumentList';
 import useHolidays from '@/hooks/useHolidays';
 import { effectiveStatus } from '@/lib/claims';
 import { formatAud, formatDate } from '@/lib/format';
+import { ensureNoticeDrafts, noticeDraftFor } from '@/lib/notices';
 
 export default function ClaimDetail() {
   const { claimId } = useParams();
@@ -44,6 +45,16 @@ export default function ClaimDetail() {
       setDocuments(documentPage || []);
     }
     setLoading(false);
+
+    // The clock has run out: make sure the notice is waiting as a draft.
+    if (record && effectiveStatus(record) === 'ignored') {
+      const drafted = await ensureNoticeDrafts([record]);
+      if (drafted) {
+        const refreshed = await base44.entities.Document.filter({ claim_id: claimId }, '-generated_at', 50);
+        setDocuments(refreshed || []);
+        setClaim(await base44.entities.Claim.get(claimId).catch(() => record));
+      }
+    }
   };
 
   useEffect(() => {
@@ -51,6 +62,7 @@ export default function ClaimDetail() {
   }, [claimId]);
 
   const status = claim ? effectiveStatus(claim) : 'draft';
+  const noticeDraft = noticeDraftFor(documents);
 
   const claimLines = useMemo(() => {
     if (!claim) return [];
@@ -167,7 +179,11 @@ export default function ClaimDetail() {
 
           {status === 'ignored' ? (
             <>
-              <Button className="bg-accent text-accent-foreground" onClick={() => generate('notice_of_intention', { email: true })} disabled={working}>
+              <Button
+                className="bg-accent text-accent-foreground"
+                onClick={() => generate('notice_of_intention', { email: true, document_id: noticeDraft ? noticeDraft.id : undefined })}
+                disabled={working}
+              >
                 {busy === 'notice_of_intention' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                 Send notice of intention
               </Button>
